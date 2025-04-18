@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: calculator-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: calculator
+  template:
+    metadata:
+      labels:
+        app: calculator
+    spec:
+      containers:
+      - name: backend
+        image: <your-dockerhub-username>/calculator-backend:latest
+        ports:
+        - containerPort: 5000
+      - name: frontend
+        image: nginx:latest
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: frontend-volume
+          mountPath: /usr/share/nginx/html
+      volumes:
+      - name: frontend-volume
+        configMap:
+          name: frontend-config
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: frontend-config
+data:
+  index.html: |
+    <content of frontend/index.html>
+  styles.css: |
+    <content of frontend/styles.css>
+  script.js: |
+    <content of frontend/script.js>
